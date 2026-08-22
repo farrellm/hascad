@@ -53,12 +53,12 @@ model7 =
             }
           Planetary
             { rOuter = 35,
-              rSun = 9 * mdl / 2,
-              rPlanet = 7 * mdl / 2,
+              sunTeeth = 9,
+              planetTeeth = 7,
               nPlanet = 5,
-              planetOffset = 0.4
+              backlash = 0.4,
+              height = 20
             }
-          20
 
 -- | The same gearbox, scaled down.
 model4 :: Form'
@@ -76,12 +76,12 @@ model4 =
             }
           Planetary
             { rOuter = 19,
-              rSun = 7 * mdl / 2,
-              rPlanet = 4 * mdl / 2,
+              sunTeeth = 7,
+              planetTeeth = 4,
               nPlanet = 5,
-              planetOffset = 0.4
+              backlash = 0.4,
+              height = 15
             }
-          15
 
 -- | A gearbox with deeper teeth and no slice override.
 model8 :: Form'
@@ -98,9 +98,9 @@ model8 =
           }
         Planetary
           { rOuter = 33,
-            rSun = 8 * mdl / 2,
-            rPlanet = 7 * mdl / 2,
+            sunTeeth = 8,
+            planetTeeth = 7,
             nPlanet = 5,
-            planetOffset = 0.4
+            backlash = 0.4,
+            height = 15
           }
-        15
