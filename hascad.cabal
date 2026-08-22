@@ -14,8 +14,15 @@ category:           Graphics
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
+flag werror
+    description: Turn warnings into errors.  Enabled in CI.
+    default:     False
+    manual:      True
+
 common warnings
     ghc-options: -Wall
+    if flag(werror)
+        ghc-options: -Werror
 
 common lang
     build-depends:      base ^>=4.21.2.0

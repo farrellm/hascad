@@ -56,3 +56,10 @@ on top of all this; `examples/Example.hs` has runnable models.
 cabal build
 cabal test
 ```
+
+CI builds with `--flags=+werror`, which turns `-Wall` into `-Werror`. To
+reproduce that locally:
+
+```
+cabal build all --enable-tests --flags=+werror
+```
