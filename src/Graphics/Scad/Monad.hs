@@ -42,19 +42,19 @@ runScad = runPureEff . State.runState mempty . Reader.runReader defaultFacet
 
 -- | Minimum angle of a fragment, in degrees (OpenSCAD's @$fa@).
 fa :: (Reader.Reader Facet :> es) => Double -> Eff es a -> Eff es a
-fa x = Reader.local (\f -> f {_fa = Just x})
+fa x = Reader.local (\f -> f {fa = Just x})
 
 -- | Minimum size of a fragment (OpenSCAD's @$fs@).
 fs :: (Reader.Reader Facet :> es) => Double -> Eff es a -> Eff es a
-fs x = Reader.local (\f -> f {_fs = Just x})
+fs x = Reader.local (\f -> f {fs = Just x})
 
 -- | Number of fragments in a full circle (OpenSCAD's @$fn@).
 fn :: (Reader.Reader Facet :> es) => Double -> Eff es a -> Eff es a
-fn x = Reader.local (\f -> f {_fn = Just x})
+fn x = Reader.local (\f -> f {fn = Just x})
 
 -- | Number of intermediate slices in a twisted @linear_extrude@.
 slices :: (Reader.Reader Facet :> es) => Int -> Eff es a -> Eff es a
-slices x = Reader.local (\f -> f {_slices = Just x})
+slices x = Reader.local (\f -> f {slices = Just x})
 
 -- | Hoist @body@ into a top-level module and call it with @children@.
 --

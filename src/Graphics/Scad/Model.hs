@@ -145,9 +145,9 @@ center = named "center" . ppBool
 facets :: Facet -> [Doc ann]
 facets f =
   concat
-    [ named' "$fa" (_fa f),
-      named' "$fs" (_fs f),
-      named' "$fn" (_fn f)
+    [ named' "$fa" f.fa,
+      named' "$fs" f.fs,
+      named' "$fn" f.fn
     ]
 
 block :: [Doc ann] -> Doc ann
@@ -203,7 +203,7 @@ instance forall d. (KnownDim d) => Pretty (Model d) where
                   : named "center" (ppBool c)
                   : named "convexity" (pretty v)
                   : named "twist" (pretty t)
-                  : named' "slices" (_slices f)
+                  : named' "slices" f.slices
                     <> facets f
               )
           )

@@ -1,8 +1,12 @@
+{-# LANGUAGE NoFieldSelectors #-}
+
 -- | Tessellation settings, corresponding to OpenSCAD's @$fa@, @$fs@, @$fn@
 -- special variables (plus @linear_extrude@'s @slices@).
 --
 -- A 'Facet' is carried in a reader effect and captured by the primitives that
--- need it; see "Graphics.Scad.Monad" for the setters.
+-- need it; see "Graphics.Scad.Monad" for the setters.  The fields are named
+-- after those setters, which is what NoFieldSelectors is for: read them with
+-- record dot syntax rather than a selector function.
 module Graphics.Scad.Facet
   ( Facet (..),
     defaultFacet,
@@ -10,13 +14,13 @@ module Graphics.Scad.Facet
 where
 
 data Facet = Facet
-  { _fa :: Maybe Double,
-    _fs :: Maybe Double,
-    _fn :: Maybe Double,
-    _slices :: Maybe Int
+  { fa :: Maybe Double,
+    fs :: Maybe Double,
+    fn :: Maybe Double,
+    slices :: Maybe Int
   }
   deriving stock (Show, Eq, Ord)
 
 defaultFacet :: Facet
 defaultFacet =
-  Facet {_fa = Nothing, _fs = Nothing, _fn = Nothing, _slices = Nothing}
+  Facet {fa = Nothing, fs = Nothing, fn = Nothing, slices = Nothing}

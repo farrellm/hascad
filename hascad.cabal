@@ -31,7 +31,8 @@ common lang
                       , relude (Relude as Prelude)
                       , relude
     default-language:   GHC2024
-    default-extensions: OverloadedStrings
+    default-extensions: OverloadedRecordDot
+                        OverloadedStrings
                         TypeFamilies
 
 library

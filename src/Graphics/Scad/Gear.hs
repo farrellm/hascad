@@ -37,15 +37,15 @@ invol :: Double -> Double
 invol alpha = tan alpha - alpha
 
 baseRadius :: Involute -> Double -> Double
-baseRadius i rPitch = cos (pressureAngle i) * rPitch
+baseRadius i rPitch = cos i.pressureAngle * rPitch
 
 involute :: Involute -> Double -> [V2 Double]
 involute i rPitch =
   let rBase = baseRadius i rPitch
       minR = rBase
-      maxR = rPitch + addendum i
-      dR = (maxR - minR) / fromIntegral (nSegment i)
-      rs = [minR + fromIntegral j * dR | j <- [0 .. nSegment i]]
+      maxR = rPitch + i.addendum
+      dR = (maxR - minR) / fromIntegral i.nSegment
+      rs = [minR + fromIntegral j * dR | j <- [0 .. i.nSegment]]
       as = [acos (rBase / r) | r <- rs]
       xs = [r * cos (invol a) | (r, a) <- zip rs as]
       ys = [r * sin (invol a) | (r, a) <- zip rs as]
@@ -58,19 +58,19 @@ tooth i rPitch =
       alphaRef = invol (acos (rBase / rPitch))
       c = convex (involute i rPitch)
       c' = rotate2d (-alphaRef) c
-      pitch = pi * module' i
+      pitch = pi * i.module'
       theta = pitch / rPitch / 2
    in (\x -> hull [x, rotate2d theta $ mirror (V2 0 1) x]) # c'
 
 -- | A spur gear of the given pitch radius.
 gear :: (HasScad es) => Involute -> Double -> Eff es Shape
 gear i rPitch =
-  let pitch = pi * module' i
+  let pitch = pi * i.module'
       theta = pitch / rPitch
       t = tooth i rPitch
-      nTeeth = round (2 * rPitch / module' i) :: Int
+      nTeeth = round (2 * rPitch / i.module') :: Int
    in ( \x ->
-          circle (rPitch - dedendum i)
+          circle (rPitch - i.dedendum)
             : [rotate2d (theta * fromIntegral n) x | n <- [0 .. nTeeth - 1]]
       )
         ## t
@@ -79,19 +79,19 @@ gear i rPitch =
 -- planets phased so their teeth mesh with both.
 planetary :: (HasScad es) => Involute -> Planetary -> Double -> Eff es Form
 planetary i p height =
-  let sun = gear i (rSun p)
+  let sun = gear i p.rSun
       parity =
-        0.5 * fromIntegral (round (2 * rPlanet p / module' i) `mod` 2 :: Int)
-      i' = i {addendum = dedendum i, dedendum = addendum i}
-      rRing = rSun p + 2 * rPlanet p
-      ring = circle (rOuter p) <-> gear i' rRing
-      pitch = pi * module' i
+        0.5 * fromIntegral (round (2 * p.rPlanet / i.module') `mod` 2 :: Int)
+      i' = i {addendum = i.dedendum, dedendum = i.addendum}
+      rRing = p.rSun + 2 * p.rPlanet
+      ring = circle p.rOuter <-> gear i' rRing
+      pitch = pi * i.module'
       -- beta: the angle of omega per tooth cycle
       betaRing = pitch / rRing
-      betaSun = pitch / rSun p -- betaPlanet == betaSun since meshed
+      betaSun = pitch / p.rSun -- betaPlanet == betaSun since meshed
       dRing_dOmega = 1 / betaRing
       dSun_dOmega = 1 / betaSun
-      theta = pitch / rPlanet p
+      theta = pitch / p.rPlanet
       planet omega =
         let (_ :: Int, phaseRing) = properFraction (omega / betaRing)
             (_ :: Int, phasePlnt) = properFraction (parity - omega / betaSun)
@@ -103,17 +103,17 @@ planetary i p height =
             delta = (phasePlnt' - phaseRing) / (dRing_dOmega + dSun_dOmega)
             omega' = omega + 1 * delta
          in rotate' (V3 0 0 omega')
-              . translate (V3 (rPlanet p + rSun p) 0 0)
-              . herringbone (-1) (rPlanet p)
-              . rotate2d ((theta / 2) + (omega' * rSun p / rPlanet p))
+              . translate (V3 (p.rPlanet + p.rSun) 0 0)
+              . herringbone (-1) p.rPlanet
+              . rotate2d ((theta / 2) + (omega' * p.rSun / p.rPlanet))
    in ( \g ->
           herringbone (-1) rRing ring
-            : herringbone 1 (rSun p) sun
-            : [ planet (tau / fromIntegral (nPlanet p) * fromIntegral n) g
-              | n <- [0 .. nPlanet p - 1]
+            : herringbone 1 p.rSun sun
+            : [ planet (tau / fromIntegral p.nPlanet * fromIntegral n) g
+              | n <- [0 .. p.nPlanet - 1]
               ]
       )
-        ## (mirror (V2 1 0) . offsetR (-planetOffset p) False $ gear i (rPlanet p))
+        ## (mirror (V2 1 0) . offsetR (-p.planetOffset) False $ gear i p.rPlanet)
   where
     -- Two mirrored halves of opposite twist, so axial forces cancel.
     herringbone :: (HasScad es) => Double -> Double -> Eff es Shape -> Eff es Form
