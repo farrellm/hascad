@@ -110,7 +110,7 @@ planetary i p height =
           herringbone (-1) rRing ring
             : herringbone 1 (rSun p) sun
             : [ planet (tau / fromIntegral (nPlanet p) * fromIntegral n) g
-                | n <- [0 .. nPlanet p - 1]
+              | n <- [0 .. nPlanet p - 1]
               ]
       )
         ## (mirror (V2 1 0) . offsetR (-planetOffset p) False $ gear i (rPlanet p))

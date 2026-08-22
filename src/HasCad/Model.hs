@@ -204,7 +204,7 @@ instance forall d. (KnownDim d) => Pretty (Model d) where
                   : named "convexity" (pretty v)
                   : named "twist" (pretty t)
                   : named' "slices" (_slices f)
-                  <> facets f
+                    <> facets f
               )
           )
         <+> block [pretty m]
