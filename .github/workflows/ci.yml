@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    name: build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: haskell-actions/setup@v2
+        id: setup
+        with:
+          ghc-version: "9.12.4"
+          cabal-version: "3.16.1.0"
+
+      - name: Configure
+        # +werror: warnings are a build failure in CI, but not day to day.
+        run: cabal configure --enable-tests --flags=+werror
+
+      - name: Freeze
+        run: cabal freeze
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-${{ hashFiles('cabal.project.freeze') }}
+          restore-keys: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-
+
+      - name: Build
+        run: cabal build all
+
+      - name: Test
+        run: cabal test all --test-show-details=direct
+
+  format:
+    name: ormolu
+    runs-on: ubuntu-latest
+    env:
+      ORMOLU_VERSION: "0.8.0.2"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install ormolu
+        run: |
+          curl -sSfL -o ormolu.zip \
+            "https://github.com/tweag/ormolu/releases/download/$ORMOLU_VERSION/ormolu-x86_64-linux.zip"
+          unzip -q ormolu.zip -d "$RUNNER_TEMP/bin"
+          chmod +x "$RUNNER_TEMP/bin/ormolu"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Check formatting
+        run: ormolu --mode check $(git ls-files '*.hs')
