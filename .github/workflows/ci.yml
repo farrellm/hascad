@@ -39,8 +39,18 @@ jobs:
   format:
     name: ormolu
     runs-on: ubuntu-latest
+    env:
+      ORMOLU_VERSION: "0.8.0.2"
     steps:
       - uses: actions/checkout@v7
-      - uses: haskell-actions/run-ormolu@v21
-        with:
-          version: "0.8.0.2"
+
+      - name: Install ormolu
+        run: |
+          curl -sSfL -o ormolu.zip \
+            "https://github.com/tweag/ormolu/releases/download/$ORMOLU_VERSION/ormolu-x86_64-linux.zip"
+          unzip -q ormolu.zip -d "$RUNNER_TEMP/bin"
+          chmod +x "$RUNNER_TEMP/bin/ormolu"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Check formatting
+        run: ormolu --mode check $(git ls-files '*.hs')

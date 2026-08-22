@@ -8,7 +8,6 @@ module HasCad.Dimension
   )
 where
 
-import Data.Kind (Type)
 import HasCad.Vector (V2, V3)
 
 data Dimension = Two | Three
