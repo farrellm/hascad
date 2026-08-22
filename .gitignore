@@ -21,3 +21,6 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+
+# written by the default `hascad` run
+test.scad

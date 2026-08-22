@@ -1,49 +1,68 @@
 cabal-version:      3.14
 name:               hascad
 version:            0.1.0.0
--- synopsis:
--- description:
+synopsis:           A Haskell DSL for generating OpenSCAD models
+description:
+    A typed, dimension-indexed embedded language for describing solid models,
+    rendered to OpenSCAD source.  Repeated geometry is automatically hoisted
+    into shared OpenSCAD modules.
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Matthew Farrell
 maintainer:         farrellm@alum.mit.edu
--- copyright:
+category:           Graphics
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
--- extra-source-files:
 
 common warnings
     ghc-options: -Wall
 
+common lang
+    build-depends:      base ^>=4.21.2.0
+                      , relude
+    mixins:             base hiding (Prelude)
+                      , relude (Relude as Prelude)
+                      , relude
+    default-language:   GHC2024
+    default-extensions: OverloadedStrings
+                        TypeFamilies
+
 library
-    import:           warnings
-    exposed-modules:  MyLib
-    -- other-modules:
-    -- other-extensions:
-    build-depends:    base ^>=4.21.2.0
+    import:           warnings, lang
+    exposed-modules:  HasCad
+                      HasCad.Boolean
+                      HasCad.Dimension
+                      HasCad.Facet
+                      HasCad.Gear
+                      HasCad.Model
+                      HasCad.Monad
+                      HasCad.Primitive
+                      HasCad.Render
+                      HasCad.Transform
+                      HasCad.Vector
+    build-depends:    containers
+                    , effectful-core
+                    , prettyprinter
+                    , text
     hs-source-dirs:   src
-    default-language: GHC2024
 
 executable hascad
-    import:           warnings
+    import:           warnings, lang
     main-is:          Main.hs
-    -- other-modules:
-    -- other-extensions:
-    build-depends:
-        base ^>=4.21.2.0,
-        hascad
-
-    hs-source-dirs:   app
-    default-language: GHC2024
+    other-modules:    Example
+    build-depends:    hascad
+                    , text
+    hs-source-dirs:   app, examples
 
 test-suite hascad-test
-    import:           warnings
-    default-language: GHC2024
-    -- other-modules:
-    -- other-extensions:
+    import:           warnings, lang
     type:             exitcode-stdio-1.0
-    hs-source-dirs:   test
     main-is:          Main.hs
-    build-depends:
-        base ^>=4.21.2.0,
-        hascad
+    other-modules:    Example
+                      HasCad.GoldenSpec
+                      HasCad.RenderSpec
+    build-depends:    hascad
+                    , hspec
+                    , text
+    build-tool-depends: hspec-discover:hspec-discover
+    hs-source-dirs:   test, examples
