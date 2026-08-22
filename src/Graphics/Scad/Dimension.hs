@@ -1,6 +1,6 @@
 -- | The dimension a model lives in, and the singleton that lets code be
 -- written once for both.
-module HasCad.Dimension
+module Graphics.Scad.Dimension
   ( Dimension (..),
     V,
     SDim (..),
@@ -8,7 +8,7 @@ module HasCad.Dimension
   )
 where
 
-import HasCad.Vector (V2, V3)
+import Graphics.Scad.Vector (V2, V3)
 
 data Dimension = Two | Three
   deriving stock (Show, Eq, Ord)

@@ -2,7 +2,7 @@
 --
 -- Primed variants are the un-centered ones; the unprimed defaults center the
 -- primitive on the origin, which is almost always what you want.
-module HasCad.Primitive
+module Graphics.Scad.Primitive
   ( circle,
     square,
     square',
@@ -24,9 +24,9 @@ where
 
 import Effectful (Eff)
 import Effectful.Reader.Static qualified as Reader
-import HasCad.Model
-import HasCad.Monad
-import HasCad.Vector (V2, V3)
+import Graphics.Scad.Model
+import Graphics.Scad.Monad
+import Graphics.Scad.Vector (V2, V3)
 
 circle :: (HasScad es) => Double -> Eff es Shape
 circle r = Circle r <$> Reader.ask

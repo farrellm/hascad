@@ -3,7 +3,7 @@ module Main (main) where
 
 import Data.List (lookup)
 import Example
-import HasCad
+import Graphics.Scad
 import System.Environment (getProgName)
 
 main :: IO ()

@@ -8,7 +8,7 @@ automatically into OpenSCAD `module` declarations, which keeps output for
 things like gear teeth small.
 
 ```haskell
-import HasCad
+import Graphics.Scad
 
 tube :: Form'
 tube = fn 90 (cylinder 20 5 <-> cylinder 21 3)
@@ -47,7 +47,7 @@ into source with `render`, `renderText`, `printScad` or `writeScad`.
   (\c -> [c, translate (V2 1 0) c]) ## circle 1
   ```
 
-`HasCad.Gear` builds involute spur gears and herringbone planetary gearboxes
+`Graphics.Scad.Gear` builds involute spur gears and herringbone planetary gearboxes
 on top of all this; `examples/Example.hs` has runnable models.
 
 ## Building

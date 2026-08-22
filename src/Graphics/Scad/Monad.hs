@@ -1,6 +1,6 @@
 -- | The effects a model is built in: a reader carrying the ambient 'Facet',
 -- and a state hoisting repeated module bodies into shared declarations.
-module HasCad.Monad
+module Graphics.Scad.Monad
   ( Scad,
     HasScad,
     Shape',
@@ -20,9 +20,9 @@ import Data.Map.Strict qualified as M
 import Effectful (Eff, runPureEff, (:>))
 import Effectful.Reader.Static qualified as Reader
 import Effectful.State.Static.Local qualified as State
-import HasCad.Dimension (KnownDim)
-import HasCad.Facet (Facet (..), defaultFacet)
-import HasCad.Model
+import Graphics.Scad.Dimension (KnownDim)
+import Graphics.Scad.Facet (Facet (..), defaultFacet)
+import Graphics.Scad.Model
 
 -- | Everything the DSL needs.
 type HasScad es =

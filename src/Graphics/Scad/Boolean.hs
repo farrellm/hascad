@@ -2,7 +2,7 @@
 --
 -- The operators flatten as they go, so a chain of unions renders as a single
 -- @union()@ rather than a tower of nested ones.
-module HasCad.Boolean
+module Graphics.Scad.Boolean
   ( SetLike (..),
     Union (..),
     Intersection (..),
@@ -15,8 +15,8 @@ module HasCad.Boolean
 where
 
 import Effectful (Eff)
-import HasCad.Model
-import HasCad.Monad (HasScad)
+import Graphics.Scad.Model
+import Graphics.Scad.Monad (HasScad)
 
 infixl 6 <+>
 

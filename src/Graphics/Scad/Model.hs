@@ -5,11 +5,11 @@
 -- 'Model' is indexed by 'Dimension' so that the type checker rejects, say,
 -- extruding a solid or unioning a square with a cube.  Constructors are
 -- exported so that alternative interpreters can be written; the intended way
--- to build a 'Model' is the DSL re-exported from "HasCad".
+-- to build a 'Model' is the DSL re-exported from "Graphics.Scad".
 --
 -- The pretty-printer is written once, polymorphically in the dimension;
 -- 'sdim' is consulted only where the two dimensions genuinely differ.
-module HasCad.Model
+module Graphics.Scad.Model
   ( Radian (..),
     tau,
     OffsetMode (..),
@@ -24,9 +24,9 @@ module HasCad.Model
   )
 where
 
-import HasCad.Dimension
-import HasCad.Facet (Facet (..))
-import HasCad.Vector (V2 (..), V3 (..))
+import Graphics.Scad.Dimension
+import Graphics.Scad.Facet (Facet (..))
+import Graphics.Scad.Vector (V2 (..), V3 (..))
 import Prettyprinter
 
 -- | An angle in radians.  OpenSCAD works in degrees; the conversion happens

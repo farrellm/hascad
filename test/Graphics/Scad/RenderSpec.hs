@@ -1,7 +1,7 @@
-module HasCad.RenderSpec (spec) where
+module Graphics.Scad.RenderSpec (spec) where
 
 import Data.Text qualified as T
-import HasCad
+import Graphics.Scad
 import Test.Hspec
 
 shape :: Shape' -> Text

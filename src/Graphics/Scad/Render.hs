@@ -1,5 +1,5 @@
 -- | Turning a model into OpenSCAD source.
-module HasCad.Render
+module Graphics.Scad.Render
   ( render,
     renderText,
     printScad,
@@ -8,9 +8,9 @@ module HasCad.Render
 where
 
 import Data.Map.Strict qualified as M
-import HasCad.Dimension (KnownDim)
-import HasCad.Model
-import HasCad.Monad
+import Graphics.Scad.Dimension (KnownDim)
+import Graphics.Scad.Model
+import Graphics.Scad.Monad
 import Prettyprinter
 import Prettyprinter.Render.Text (putDoc, renderStrict)
 

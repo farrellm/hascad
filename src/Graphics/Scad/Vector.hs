@@ -3,7 +3,7 @@
 -- The DSL only ever uses these as containers of coordinates, so rather than
 -- depend on @linear@ we define them here, with the numeric instances that make
 -- writing coordinates by hand pleasant.
-module HasCad.Vector
+module Graphics.Scad.Vector
   ( V2 (..),
     V3 (..),
   )

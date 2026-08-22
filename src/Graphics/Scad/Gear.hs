@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiWayIf #-}
 
 -- | Involute spur gears, and herringbone planetary gearboxes built from them.
-module HasCad.Gear
+module Graphics.Scad.Gear
   ( Involute (..),
     Planetary (..),
     tooth,
@@ -11,7 +11,7 @@ module HasCad.Gear
 where
 
 import Effectful (Eff)
-import HasCad
+import Graphics.Scad
 
 -- | The shape of a tooth, shared by every gear that meshes.
 data Involute = Involute

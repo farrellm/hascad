@@ -9,8 +9,8 @@ module Example
   )
 where
 
-import HasCad
-import HasCad.Gear
+import Graphics.Scad
+import Graphics.Scad.Gear
 
 -- | Every model, by the name the command line knows it as.
 models :: [(Text, Form')]

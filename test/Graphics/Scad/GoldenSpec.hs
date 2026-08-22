@@ -1,9 +1,9 @@
 -- | End-to-end check on a model that exercises most of the language: nested
 -- module sharing, extrusion, offsets and booleans.
-module HasCad.GoldenSpec (spec) where
+module Graphics.Scad.GoldenSpec (spec) where
 
 import Example (model7)
-import HasCad
+import Graphics.Scad
 import Test.Hspec
 
 spec :: Spec

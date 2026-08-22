@@ -36,17 +36,17 @@ common lang
 
 library
     import:           warnings, lang
-    exposed-modules:  HasCad
-                      HasCad.Boolean
-                      HasCad.Dimension
-                      HasCad.Facet
-                      HasCad.Gear
-                      HasCad.Model
-                      HasCad.Monad
-                      HasCad.Primitive
-                      HasCad.Render
-                      HasCad.Transform
-                      HasCad.Vector
+    exposed-modules:  Graphics.Scad
+                      Graphics.Scad.Boolean
+                      Graphics.Scad.Dimension
+                      Graphics.Scad.Facet
+                      Graphics.Scad.Gear
+                      Graphics.Scad.Model
+                      Graphics.Scad.Monad
+                      Graphics.Scad.Primitive
+                      Graphics.Scad.Render
+                      Graphics.Scad.Transform
+                      Graphics.Scad.Vector
     build-depends:    containers
                     , effectful-core
                     , prettyprinter
@@ -66,8 +66,8 @@ test-suite hascad-test
     type:             exitcode-stdio-1.0
     main-is:          Main.hs
     other-modules:    Example
-                      HasCad.GoldenSpec
-                      HasCad.RenderSpec
+                      Graphics.Scad.GoldenSpec
+                      Graphics.Scad.RenderSpec
     build-depends:    hascad
                     , hspec
                     , text

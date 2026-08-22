@@ -9,9 +9,9 @@
 -- > tube :: Form'
 -- > tube = fn 90 (cylinder 20 5 <-> cylinder 21 3)
 --
--- This module re-exports the DSL.  Import "HasCad.Model" as well if you want
+-- This module re-exports the DSL.  Import "Graphics.Scad.Model" as well if you want
 -- the AST constructors.
-module HasCad
+module Graphics.Scad
   ( -- * Models
     Dimension (..),
     KnownDim,
@@ -103,12 +103,12 @@ module HasCad
   )
 where
 
-import HasCad.Boolean
-import HasCad.Dimension (Dimension (..), KnownDim)
-import HasCad.Facet (Facet, defaultFacet)
-import HasCad.Model (Form, Model, Module, Radian (..), Shape, tau)
-import HasCad.Monad
-import HasCad.Primitive
-import HasCad.Render
-import HasCad.Transform
-import HasCad.Vector (V2 (..), V3 (..))
+import Graphics.Scad.Boolean
+import Graphics.Scad.Dimension (Dimension (..), KnownDim)
+import Graphics.Scad.Facet (Facet, defaultFacet)
+import Graphics.Scad.Model (Form, Model, Module, Radian (..), Shape, tau)
+import Graphics.Scad.Monad
+import Graphics.Scad.Primitive
+import Graphics.Scad.Render
+import Graphics.Scad.Transform
+import Graphics.Scad.Vector (V2 (..), V3 (..))

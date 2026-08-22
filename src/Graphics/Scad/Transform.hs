@@ -1,5 +1,5 @@
 -- | Transformations and the rendering modifiers.
-module HasCad.Transform
+module Graphics.Scad.Transform
   ( translate,
     rotate,
     rotate',
@@ -21,10 +21,10 @@ where
 
 import Effectful (Eff)
 import Effectful.Reader.Static qualified as Reader
-import HasCad.Dimension (V)
-import HasCad.Model
-import HasCad.Monad
-import HasCad.Vector (V3 (..))
+import Graphics.Scad.Dimension (V)
+import Graphics.Scad.Model
+import Graphics.Scad.Monad
+import Graphics.Scad.Vector (V3 (..))
 
 translate :: (HasScad es) => V d Double -> Eff es (Model d) -> Eff es (Model d)
 translate v = fmap (Translate v)

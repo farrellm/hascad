@@ -2,8 +2,8 @@
 -- special variables (plus @linear_extrude@'s @slices@).
 --
 -- A 'Facet' is carried in a reader effect and captured by the primitives that
--- need it; see "HasCad.Monad" for the setters.
-module HasCad.Facet
+-- need it; see "Graphics.Scad.Monad" for the setters.
+module Graphics.Scad.Facet
   ( Facet (..),
     defaultFacet,
   )
