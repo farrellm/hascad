@@ -168,13 +168,21 @@ gear i n =
 -- measured against.
 herringbone ::
   (HasScad es) => Double -> Double -> Double -> Eff es Shape -> Eff es Form
-herringbone height hand r m =
+herringbone height hand r m = do
+  f <- askFacet
   let eps = 1e-5
       height' = height + eps
-   in (\c -> [c, mirror (V3 0 0 1) c])
-        ## translate
-          (V3 0 0 (-eps / 2))
-          (linearExtrude (0.5 * height') False 10 (0.5 * hand * height' / r) m)
+      twist = 0.5 * hand * height' / r
+      -- Slices are this extrude's fragments: the cross-section sweeps
+      -- @|twist| * r@ of arc as it climbs -- which, for the 45 degree helix
+      -- this draws, is just half the height, whatever the radius -- and $fs
+      -- bounds how much of that arc one slice may cover.
+      n = extrudeSlices f twist r
+  slices n $
+    (\c -> [c, mirror (V3 0 0 1) c])
+      ## translate
+        (V3 0 0 (-eps / 2))
+        (linearExtrude (0.5 * height') False 10 twist m)
 
 -- | A planetary gearbox: a ring gear, a sun gear, and planets phased so their
 -- teeth mesh with both.

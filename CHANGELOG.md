@@ -25,3 +25,12 @@
   agree, rather than to one up to a tooth and a half away.
 * Added `defaultInvolute`, `internal`, `herringbone`, `flank` and the derived
   radii `pitchRadius`, `baseRadius`, `rootRadius` and `tipRadius`.
+* `herringbone` derives its own slice count from the ambient `$fa` and `$fs`
+  instead of leaving it to whatever `slices` happened to be in scope.  It draws
+  a 45° helix, so a small gear twists a long way -- the Work gearbox's planets
+  turn 50.93° over each half -- and at `slices = 10` that put more rotation
+  between one slice and the next than a tooth spans at its tip, which rendered
+  the teeth as a stack of torn scales.  An explicit `slices` still wins.
+* Added `fragments` and `extrudeSlices` to `Graphics.Scad.Facet`, which
+  reimplement OpenSCAD's own fragment rule for the geometry hascad has to
+  resolve itself, and `askFacet` for reading the settings in scope.
