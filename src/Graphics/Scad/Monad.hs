@@ -10,6 +10,7 @@ module Graphics.Scad.Monad
     fs,
     fn,
     slices,
+    askFacet,
     smodule,
     (#),
     (##),
@@ -55,6 +56,11 @@ fn x = Reader.local (\f -> f {fn = Just x})
 -- | Number of intermediate slices in a twisted @linear_extrude@.
 slices :: (Reader.Reader Facet :> es) => Int -> Eff es a -> Eff es a
 slices x = Reader.local (\f -> f {slices = Just x})
+
+-- | The tessellation settings in force here, for geometry that has to resolve
+-- them itself rather than hand them to OpenSCAD.
+askFacet :: (Reader.Reader Facet :> es) => Eff es Facet
+askFacet = Reader.ask
 
 -- | Hoist @body@ into a top-level module and call it with @children@.
 --

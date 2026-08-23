@@ -3,6 +3,7 @@ module Graphics.Scad.GearSpec (spec) where
 import Data.List (maximum, minimum)
 import Data.Text qualified as T
 import Graphics.Scad
+import Graphics.Scad.Facet (Facet (..))
 import Graphics.Scad.Gear
 import Test.Hspec
 
@@ -73,3 +74,30 @@ spec = do
       ringTeeth p `shouldBe` 23
       pitchRadius i (ringTeeth p)
         `shouldBe` pitchRadius i p.sunTeeth + 2 * pitchRadius i p.planetTeeth
+
+  -- The bug these guard: 'herringbone' draws a 45 degree helix, so a gear as
+  -- small as the Work gearbox's planets twists 50.93° over each half.  Against
+  -- the slices = 10 that model asked for, that is 5.09° from one slice to the
+  -- next -- more than the 3.91° a tooth spans at its tip, or the 2.11° left
+  -- after the backlash offset.  'linear_extrude' joins corresponding vertices
+  -- between slices, so nothing comes apart, but consecutive cross-sections do
+  -- not overlap and the teeth render as a stack of torn scales.
+  describe "tessellation" $ do
+    it "resolves a full circle the way OpenSCAD does" $
+      fragments defaultFacet tau 9.6875 `shouldBe` 30
+    it "tessellates a twist as the arc its cross-section sweeps" $ do
+      let twist = 0.5 * 20 / 11.25
+          fine = defaultFacet {fs = Just 0.2}
+      -- 5.09° a slice at OpenSCAD's default $fs; 1.02° once the model asks for
+      -- a resolution its millimetre-wide teeth can actually be drawn at.
+      extrudeSlices defaultFacet twist 11.25 `shouldBe` 5
+      extrudeSlices fine twist 11.25 `shouldBe` 50
+    it "slices a slow twist as finely as a fast one" $ do
+      -- Both halves of a 45° herringbone sweep half its height of arc,
+      -- whatever the radius: the ring must not come out coarser than the
+      -- planets just because it turns through a fifth of the angle.
+      let f = defaultFacet {fs = Just 0.2}
+      extrudeSlices f (0.5 * 20 / 33.75) 33.75 `shouldBe` 50
+      extrudeSlices f (0.5 * 20 / 11.25) 11.25 `shouldBe` 50
+    it "yields to an explicit slice count" $
+      extrudeSlices defaultFacet {slices = Just 7} 1.0 11.25 `shouldBe` 7

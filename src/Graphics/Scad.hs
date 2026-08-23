@@ -44,6 +44,9 @@ module Graphics.Scad
     fs,
     fn,
     slices,
+    askFacet,
+    fragments,
+    extrudeSlices,
 
     -- * Two-dimensional primitives
     circle,
@@ -105,7 +108,7 @@ where
 
 import Graphics.Scad.Boolean
 import Graphics.Scad.Dimension (Dimension (..), KnownDim)
-import Graphics.Scad.Facet (Facet, defaultFacet)
+import Graphics.Scad.Facet (Facet, defaultFacet, extrudeSlices, fragments)
 import Graphics.Scad.Model (Form, Model, Module, Radian (..), Shape, tau)
 import Graphics.Scad.Monad
 import Graphics.Scad.Primitive
