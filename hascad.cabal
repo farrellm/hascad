@@ -48,6 +48,7 @@ library
                       Graphics.Scad.Render
                       Graphics.Scad.Transform
                       Graphics.Scad.Vector
+                      Work
     build-depends:    containers
                     , effectful-core
                     , prettyprinter
