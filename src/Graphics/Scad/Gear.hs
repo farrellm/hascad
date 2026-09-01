@@ -358,19 +358,15 @@ herringbone ::
   (HasScad es) => Double -> Double -> Double -> Eff es Shape -> Eff es Form
 herringbone height beta r m = do
   f <- askFacet
-  let eps = 1e-5
-      height' = height + eps
-      twist = helixTwist height' beta r
+  let twist = helixTwist height beta r
       -- Slices are this extrude's fragments: the cross-section sweeps
-      -- @|twist| * r@ of arc as it climbs -- which is @height' |tan beta| / 2@,
+      -- @|twist| * r@ of arc as it climbs -- which is @height |tan beta| / 2@,
       -- the same for every gear at one helix angle, whatever its radius --
       -- and $fs bounds how much of that arc one slice may cover.
       n = extrudeSlices f twist r
   slices n $
     (\c -> [c, mirror (V3 0 0 1) c])
-      ## translate
-        (V3 0 0 (-eps / 2))
-        (linearExtrude (0.5 * height') False 10 twist m)
+      ## linearExtrude (0.5 * height) False 10 twist m
 
 -- | Distance from the sun's axis to a planet's.  The reference distance
 -- @rSun + rPlanet@ when nothing is shifted, and wider than it when the sun and

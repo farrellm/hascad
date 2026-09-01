@@ -31,6 +31,15 @@
   turn 50.93° over each half -- and at `slices = 10` that put more rotation
   between one slice and the next than a tooth spans at its tip, which rendered
   the teeth as a stack of torn scales.  An explicit `slices` still wins.
+* `herringbone` meets its two halves exactly on `z = 0`.  They used to be
+  extruded a hair tall and sunk half of that, overlapping by 10µm so the union
+  had something to bite on; but across the overlap the two twisted surfaces
+  diverge, and the mesher rings every tooth of every gear with needle
+  triangles.  On the Work gearbox at a 10° helix that was 1862 such faces
+  totalling 0.00067mm², 389 of them with no area at all, and a mesh 28% larger
+  than it needed to be.  Each half is now extruded to exactly half the height,
+  so a rendered gearbox no longer carries the fudge in its extrude heights or
+  its twists.
 * The herringbone helix angle is configurable.  `Planetary` carries a
   `helixAngle`, in radians, and `Nothing` is the 45° helix that was drawn
   before, so an existing gearbox is unchanged.  A shallower helix twists a

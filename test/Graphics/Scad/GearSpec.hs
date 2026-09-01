@@ -264,6 +264,12 @@ spec = do
       -- the tip, which is why the tip is the place to ask.
       ringTipThickness cutter zr `shouldSatisfy` (> 0)
 
+  describe "herringbone" $
+    it "meets its halves on the plane rather than overlapping them" $ do
+      let out = lines (form (herringbone 20 (pi / 4) 11.25 (circle 5)))
+      out `shouldSatisfy` any (T.isSuffixOf "linear_extrude( height = 10.0")
+      out `shouldSatisfy` all (not . T.isInfixOf "translate")
+
   -- The bug these guard: 'herringbone' draws a 45 degree helix by default, so
   -- a gear as
   -- small as the Work gearbox's planets twists 50.93° over each half.  Against
