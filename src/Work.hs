@@ -37,13 +37,18 @@ render = writeScad "work.scad" model7
 -- tessellation is far too coarse for them: at @$fa = 12@ the root circles come
 -- out as 30-gons, and at @$fs = 2@ 'herringbone' would put over 5° of twist
 -- between one slice and the next -- more than a tooth spans at its tip.
+--
+-- 'herringbone' builds each gear about @z = 0@, the plane its two halves
+-- mirror in, so a gearbox comes out straddling that plane with half of it
+-- below.  This one is lifted by half its height to stand on the bed instead,
+-- which is where a slicer wants it.
 model7 :: Form'
 model7 =
   let phi = (1 + sqrt 5) / 2
       m = 3.2
       n = 6 :: Int
       h = fromIntegral n * m / phi
-   in fa 3 . fs 0.2 $
+   in fa 3 . fs 0.2 . translate (V3 0 0 (h / 2)) $
         planetary
           (defaultInvolute m) {pressureAngle = pi * 20 / 180}
           Planetary
