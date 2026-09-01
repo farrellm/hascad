@@ -44,7 +44,10 @@ into source with `render`, `renderText`, `printScad` or `writeScad`.
   see below.
 
 `Graphics.Scad.Gear` builds involute spur gears and herringbone planetary gearboxes
-on top of all this; `examples/Example.hs` has runnable models.
+on top of all this. Teeth may be profile shifted, which is what lets tooth counts
+below the undercut limit come out with usable flanks; a shifted planetary is laid
+out at the wider centre distance its shifts imply. `examples/Example.hs` has
+runnable models.
 
 ## Modules from functions
 
