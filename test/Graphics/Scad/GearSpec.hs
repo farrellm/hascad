@@ -327,8 +327,8 @@ spec = do
               height = 15,
               helixAngle = Nothing
             }
-        box q = form (slices 10 (planetary (steep 2.0) q))
+        gearbox q = form (slices 10 (planetary (steep 2.0) q))
     it "defaults a gearbox to the 45 degree helix" $
-      box p `shouldBe` box p {helixAngle = Just beta}
+      gearbox p `shouldBe` gearbox p {helixAngle = Just beta}
     it "draws a different gearbox at a different angle" $
-      box p `shouldNotBe` box p {helixAngle = Just (pi / 6)}
+      gearbox p `shouldNotBe` gearbox p {helixAngle = Just (pi / 6)}
