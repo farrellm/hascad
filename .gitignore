@@ -24,3 +24,10 @@ cabal.project.local~
 
 # written by the default `hascad` run
 test.scad
+
+# written by `Work.render`
+work.scad
+
+# emacs autosave and lock files
+\#*\#
+.\#*

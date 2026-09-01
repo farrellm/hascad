@@ -49,12 +49,15 @@ model7 =
               module' = mdl,
               addendum = add,
               dedendum = add,
+              shift = 0,
               nSegment = 7
             }
           Planetary
             { rOuter = 35,
               sunTeeth = 9,
               planetTeeth = 7,
+              sunShift = 0,
+              planetShift = 0,
               nPlanet = 5,
               backlash = 0.4,
               height = 20
@@ -72,12 +75,15 @@ model4 =
               module' = mdl,
               addendum = add,
               dedendum = add,
+              shift = 0,
               nSegment = 7
             }
           Planetary
             { rOuter = 19,
               sunTeeth = 7,
               planetTeeth = 4,
+              sunShift = 0,
+              planetShift = 0,
               nPlanet = 5,
               backlash = 0.4,
               height = 15
@@ -94,12 +100,15 @@ model8 =
             module' = mdl,
             addendum = add,
             dedendum = 1.25 * add,
+            shift = 0,
             nSegment = 7
           }
         Planetary
           { rOuter = 33,
             sunTeeth = 8,
             planetTeeth = 7,
+            sunShift = 0,
+            planetShift = 0,
             nPlanet = 5,
             backlash = 0.4,
             height = 15
