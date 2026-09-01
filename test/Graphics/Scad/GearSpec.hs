@@ -10,6 +10,9 @@ import Test.Hspec
 shape :: Shape' -> Text
 shape = renderText
 
+form :: Form' -> Text
+form = renderText
+
 -- | The pressure angle the example gearboxes are drawn with, which is steep
 -- enough to put the base circle well inside the root.
 steep :: Double -> Involute
@@ -76,7 +79,8 @@ spec = do
                 planetShift = 0,
                 nPlanet = 5,
                 backlash = 0.4,
-                height = 20
+                height = 20,
+                helixAngle = Nothing
               }
           i = steep 2.5
       ringTeeth p `shouldBe` 23
@@ -156,7 +160,8 @@ spec = do
               planetShift = 0.72,
               nPlanet = 5,
               backlash = 0.2,
-              height = 10
+              height = 10,
+              helixAngle = Nothing
             }
         flat = p {sunShift = 0, planetShift = 0}
     it "derives the ring shift the way it derives the ring teeth" $
@@ -259,7 +264,8 @@ spec = do
       -- the tip, which is why the tip is the place to ask.
       ringTipThickness cutter zr `shouldSatisfy` (> 0)
 
-  -- The bug these guard: 'herringbone' draws a 45 degree helix, so a gear as
+  -- The bug these guard: 'herringbone' draws a 45 degree helix by default, so
+  -- a gear as
   -- small as the Work gearbox's planets twists 50.93° over each half.  Against
   -- the slices = 10 that model asked for, that is 5.09° from one slice to the
   -- next -- more than the 3.91° a tooth spans at its tip, or the 2.11° left
@@ -285,3 +291,44 @@ spec = do
       extrudeSlices f (0.5 * 20 / 11.25) 11.25 `shouldBe` 50
     it "yields to an explicit slice count" $
       extrudeSlices defaultFacet {slices = Just 7} 1.0 11.25 `shouldBe` 7
+
+  describe "helix angle" $ do
+    let h = 20
+        beta = pi / 4
+    -- The formula the code carried before the angle was a parameter: half the
+    -- height over the radius, which is a 45 degree helix and nothing else.
+    it "twists a 45 degree helix the way it always did" $ do
+      helixTwist h beta 11.25 `shouldBeNear` 0.5 * h / 11.25
+      helixTwist h beta 33.75 `shouldBeNear` 0.5 * h / 33.75
+    -- What lets one signed angle stand in for the hand 'herringbone' used to
+    -- take separately: tan is odd, so the sign passes straight through.
+    it "takes its hand from the sign of the angle" $
+      helixTwist h (-beta) 11.25 `shouldBeNear` negate (helixTwist h beta 11.25)
+    it "does not twist at all at zero, and further the steeper it gets" $ do
+      helixTwist h 0 11.25 `shouldBe` 0
+      helixTwist h (pi / 3) 11.25 `shouldSatisfy` (> helixTwist h beta 11.25)
+    -- Why 'extrudeSlices' needs nothing done to it: at one helix angle every
+    -- gear sweeps the same arc as it climbs, so the ring is sliced as finely
+    -- as the planets whatever the angle is.
+    it "sweeps one arc at one angle, whatever the radius" $ do
+      let arc b r = abs (helixTwist h b r) * r
+      forM_ [pi / 6, beta, pi / 3] $ \b ->
+        arc b 33.75 `shouldBeNear` arc b 11.25
+
+    let p =
+          Planetary
+            { rOuter = 19,
+              sunTeeth = 7,
+              planetTeeth = 4,
+              sunShift = 0,
+              planetShift = 0,
+              nPlanet = 5,
+              backlash = 0.4,
+              height = 15,
+              helixAngle = Nothing
+            }
+        box q = form (slices 10 (planetary (steep 2.0) q))
+    it "defaults a gearbox to the 45 degree helix" $
+      box p `shouldBe` box p {helixAngle = Just beta}
+    it "draws a different gearbox at a different angle" $
+      box p `shouldNotBe` box p {helixAngle = Just (pi / 6)}

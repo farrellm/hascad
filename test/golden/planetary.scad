@@ -132,7 +132,7 @@ module mdl_5() {
       linear_extrude( height = 10.000005
                     , center = false
                     , convexity = 10
-                    , twist = -19.928976751642463
+                    , twist = -19.92897675164246
                     , slices = 10 ) {
         difference() {
           circle(35.0);
@@ -159,7 +159,7 @@ module mdl_5() {
       linear_extrude( height = 10.000005
                     , center = false
                     , convexity = 10
-                    , twist = 50.9296072541974
+                    , twist = 50.92960725419739
                     , slices = 10 ) {
         mdl_3() {
           mdl_4() {

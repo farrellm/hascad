@@ -60,7 +60,8 @@ model7 =
               planetShift = 0,
               nPlanet = 5,
               backlash = 0.4,
-              height = 20
+              height = 20,
+              helixAngle = Nothing
             }
 
 -- | The same gearbox, scaled down.
@@ -86,7 +87,8 @@ model4 =
               planetShift = 0,
               nPlanet = 5,
               backlash = 0.4,
-              height = 15
+              height = 15,
+              helixAngle = Nothing
             }
 
 -- | A gearbox with deeper teeth and no slice override.
@@ -111,5 +113,6 @@ model8 =
             planetShift = 0,
             nPlanet = 5,
             backlash = 0.4,
-            height = 15
+            height = 15,
+            helixAngle = Nothing
           }

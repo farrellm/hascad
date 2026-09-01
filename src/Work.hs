@@ -54,7 +54,8 @@ model7 =
               planetShift = 0.80,
               nPlanet = 4,
               backlash = 0.2,
-              height = h
+              height = h,
+              helixAngle = Nothing
             }
 
 model7' :: Form'
