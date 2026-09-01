@@ -27,3 +27,7 @@ test.scad
 
 # written by `Work.render`
 work.scad
+
+# emacs autosave and lock files
+\#*\#
+.\#*
