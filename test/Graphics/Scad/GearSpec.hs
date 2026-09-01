@@ -99,6 +99,29 @@ spec = do
     it "leaves less land at the tip the further it goes" $ do
       tipThickness i 9 `shouldSatisfy` (> 0)
       tipThickness (shifted 1.2 i) 9 `shouldSatisfy` (< tipThickness i 9)
+
+    -- A ring's tooth is only what its space leaves of the circular pitch, and
+    -- that space is an external tooth, which fattens toward its own root.  So
+    -- a ring tooth thins the further in it goes, and its tip -- the innermost
+    -- radius, not the outermost -- is where it would point.
+    it "measures a ring's tooth at its tip, which is its innermost radius" $ do
+      -- Pull an unshifted ring's tip back onto its own pitch circle and the
+      -- tooth there is half the circular pitch, like any other.
+      let onPitch = (internal i) {dedendum = 0}
+      ringTipThickness onPitch 23 `shouldBeNear` 2.5 * pi / 2
+      -- A ring reaching further in has less tooth left at the tip than that.
+      ringTipThickness (internal i) 23
+        `shouldSatisfy` (< ringTipThickness onPitch 23)
+    it "reports a pointed ring tooth as one" $ do
+      -- Nothing sensible points, so this takes a ring shifted hard with its
+      -- teeth driven much further in than a gearbox would ask for.
+      let pointed = (internal (shifted 1.8 i)) {dedendum = 6.0}
+      ringTipThickness pointed 23 `shouldSatisfy` (< 0)
+    it "cannot point a ring tooth that ends inside the base circle" $ do
+      -- There 'flank' draws a radial line, and radial lines do not converge.
+      let deep = (internal i) {dedendum = 3 * 2.5}
+      rootRadius deep 23 `shouldSatisfy` (< baseRadius deep 23)
+      ringTipThickness deep 23 `shouldSatisfy` (> 0)
     -- The undercut limit a 20 degree rack is famous for: 2 / sin^2 20, which
     -- is 17.1, so seventeen teeth need a shift and eighteen do not.
     it "is needed below the undercut limit and not above it" $ do
@@ -228,8 +251,13 @@ spec = do
       over (tipRadius cutter zr) (tipRadius planet p.planetTeeth)
         `shouldBeNear` clearance
       -- Cutting the ring's root back also un-points the cutter, so the tooth
-      -- spaces are swept to full depth.
+      -- spaces are swept to full depth ...
       tipThickness cutter zr `shouldSatisfy` (> 0)
+      -- ... and reaching the ring's own teeth further in must not point those.
+      -- At this shift the ring's tooth is a sliver where its reference circle
+      -- falls, and only fattens out to a usable 2.5mm by the time it reaches
+      -- the tip, which is why the tip is the place to ask.
+      ringTipThickness cutter zr `shouldSatisfy` (> 0)
 
   -- The bug these guard: 'herringbone' draws a 45 degree helix, so a gear as
   -- small as the Work gearbox's planets twists 50.93° over each half.  Against

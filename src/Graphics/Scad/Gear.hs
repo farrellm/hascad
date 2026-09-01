@@ -49,6 +49,7 @@ module Graphics.Scad.Gear
     tipRadius,
     toothThickness,
     tipThickness,
+    ringTipThickness,
 
     -- * Meshing
     invol,
@@ -228,6 +229,40 @@ tipThickness i n =
    in rTip
         * ( toothThickness i / pitchRadius i n
               + 2 * (invol i.pressureAngle - invol alphaTip)
+          )
+
+-- | Arc thickness of a ring's tooth at its tip: the ring counterpart of
+-- 'tipThickness', bounding a shift from the same side but reached from the
+-- other direction.
+--
+-- It takes the cutter, as 'internal' returns it, because that is what a ring
+-- is actually cut with, and because 'planetary' trims the cutter further
+-- before it uses one.
+--
+-- A ring's teeth point inward, and a ring's tooth thins the further in it
+-- goes.  The reason is that the ring's tooth is only what its space leaves of
+-- the circular pitch, and that space is an external tooth, which fattens
+-- toward its own root: whatever the cutter takes on the way in, the ring's
+-- tooth gives up.  So the tip is where a ring tooth is narrowest and where it
+-- would come to a point, just as the tip is for an external gear -- only here
+-- the tip is the innermost radius, not the outermost.
+--
+-- Inside the base circle 'flank' draws a radial line rather than an involute,
+-- and radial lines do not converge, so a tip below it cannot point at all.
+-- The narrowest involute-bounded width is then the one at the base circle,
+-- and that is what this reports.
+ringTipThickness :: Involute -> Int -> Double
+ringTipThickness c n =
+  let rBase = baseRadius c n
+      rPitch = pitchRadius c n
+      -- The ring's tip is where the cutter bottoms out.
+      rTip = max (rootRadius c n) rBase
+      alphaTip = acos (rBase / rTip)
+      -- What the cutter's tooth leaves of the pitch is the ring's.
+      s = pi * c.module' - toothThickness c
+   in rTip
+        * ( s / rPitch
+              + 2 * (invol alphaTip - invol c.pressureAngle)
           )
 
 -- | The pressure angle a mesh actually runs at, given the total of its two

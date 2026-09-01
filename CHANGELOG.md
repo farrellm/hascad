@@ -36,7 +36,9 @@
   circle without touching the pitch or base circles; `defaultInvolute` sets it
   to zero, so an unshifted model renders exactly as before.  `minShift` gives
   the least shift that avoids undercutting, and `tipThickness` the land left at
-  the tip, which is what bounds a shift from above.  Added `shifted`,
+  the tip, which is what bounds a shift from above; `ringTipThickness` is the
+  same bound for a ring, whose teeth point inward and so thin toward their
+  innermost radius rather than their outermost.  Added `shifted`,
   `toothThickness`, `invol`, `invInvol` and `workingAngle`.
 * `Planetary` carries `sunShift` and `planetShift`, and `planetary` lays the
   gearbox out at the centre distance the shifts imply rather than at the
