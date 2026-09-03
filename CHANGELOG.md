@@ -31,6 +31,28 @@
   turn 50.93° over each half -- and at `slices = 10` that put more rotation
   between one slice and the next than a tooth spans at its tip, which rendered
   the teeth as a stack of torn scales.  An explicit `slices` still wins.
+* `herringbone` meets its two halves exactly on `z = 0`.  They used to be
+  extruded a hair tall and sunk half of that, overlapping by 10µm so the union
+  had something to bite on; but across the overlap the two twisted surfaces
+  diverge, and the mesher rings every tooth of every gear with needle
+  triangles.  On the Work gearbox at a 10° helix that was 1862 such faces
+  totalling 0.00067mm², 389 of them with no area at all, and a mesh 28% larger
+  than it needed to be.  Each half is now extruded to exactly half the height,
+  so a rendered gearbox no longer carries the fudge in its extrude heights or
+  its twists.
+* The herringbone helix angle is configurable.  `Planetary` carries a
+  `helixAngle`, in radians, and `Nothing` is the 45° helix that was drawn
+  before, so an existing gearbox is unchanged.  A shallower helix twists a
+  small gear less far -- and asks less of the slicing -- while a steeper one
+  buys more overlap.  Added `helixTwist`, which is the twist one half turns
+  through.
+  **`herringbone`'s second argument is now that signed angle, not a `1` or
+  `-1` hand.**  `tan` is odd, so the sign carries the hand by itself, but the
+  type is the same `Double` it always was: a call written against the old
+  meaning still compiles and asks for a helix of one radian.
+  The tooth profile is twisted as it is extruded, so an `Involute` describes
+  the gear in the transverse plane; the normal-plane module and pressure angle
+  a hob would be cut to are smaller by `cos beta`.
 * Teeth may be profile shifted.  `Involute` carries a `shift`, in modules,
   which moves that gear's root and tip out and fattens its tooth at the pitch
   circle without touching the pitch or base circles; `defaultInvolute` sets it

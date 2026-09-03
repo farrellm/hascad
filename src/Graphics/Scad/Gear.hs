@@ -19,6 +19,14 @@
 -- dedendum ('internal'), which ignores the tip interference a proper internal
 -- profile would account for.
 --
+-- A third comes with the helix.  'herringbone' twists a flat tooth profile as
+-- it extrudes it, so an 'Involute' describes the gear in the /transverse/
+-- plane: 'module'' and 'pressureAngle' are the transverse values, and the
+-- normal-plane ones a hob would be specified in are smaller by @cos beta@.
+-- While the helix was fixed at 45 degrees that was a constant nobody had to
+-- think about; now that 'helixAngle' varies, a caller matching these gears to
+-- a real cutter does.
+--
 -- In a 'Planetary' the ring's tooth count is not free: meshing forces
 -- @rRing = rSun + 2 rPlanet@, hence 'ringTeeth'.  Planets land on exactly even
 -- spacing only when @('sunTeeth' + 'ringTeeth') \`mod\` 'nPlanet' == 0@; when
@@ -68,6 +76,7 @@ module Graphics.Scad.Gear
     centerDistance,
     tipShortening,
     planetary,
+    helixTwist,
     herringbone,
   )
 where
@@ -154,7 +163,12 @@ data Planetary = Planetary
     -- part to actually turn.
     backlash :: Double,
     -- | Height of the gearbox.
-    height :: Double
+    height :: Double,
+    -- | Helix angle of the herringbone, in radians, or 'Nothing' for the 45
+    -- degree default.  Its sign is the hand of the sun's helix; the planets
+    -- and the ring take the opposite one, so flipping it mirrors the whole
+    -- gearbox rather than breaking any mesh.
+    helixAngle :: Maybe Double
   }
   deriving stock (Show, Eq)
 
@@ -326,26 +340,33 @@ gear i n =
       )
         ## tooth i n
 
--- | Two mirrored halves of opposite twist, so axial forces cancel.  @hand@ is
--- the sense of the twist, @1@ or @-1@; @r@ is the radius the 45° helix is
--- measured against.
+-- | The twist one half of a herringbone turns through as it climbs @height@:
+-- the rotation a @linear_extrude@ needs to lay a helix of angle @beta@ radians
+-- on the cylinder of radius @r@.
+--
+-- Signed with @beta@, since @tan@ is odd -- which is what lets one angle carry
+-- the hand as well as the pitch of the helix.  At @beta = 0@ there is no twist
+-- at all and the gear is a plain spur one; as @|beta|@ approaches a right angle
+-- the twist runs off to infinity, which is not checked for.
+helixTwist :: Double -> Double -> Double -> Double
+helixTwist height beta r = 0.5 * height * tan beta / r
+
+-- | Two mirrored halves of opposite twist, so axial forces cancel.  @beta@ is
+-- the helix angle in radians, signed: its sign is the hand of the twist, as
+-- 'helixTwist' explains.  @r@ is the radius the helix is measured against.
 herringbone ::
   (HasScad es) => Double -> Double -> Double -> Eff es Shape -> Eff es Form
-herringbone height hand r m = do
+herringbone height beta r m = do
   f <- askFacet
-  let eps = 1e-5
-      height' = height + eps
-      twist = 0.5 * hand * height' / r
+  let twist = helixTwist height beta r
       -- Slices are this extrude's fragments: the cross-section sweeps
-      -- @|twist| * r@ of arc as it climbs -- which, for the 45 degree helix
-      -- this draws, is just half the height, whatever the radius -- and $fs
-      -- bounds how much of that arc one slice may cover.
+      -- @|twist| * r@ of arc as it climbs -- which is @height |tan beta| / 2@,
+      -- the same for every gear at one helix angle, whatever its radius --
+      -- and $fs bounds how much of that arc one slice may cover.
       n = extrudeSlices f twist r
   slices n $
     (\c -> [c, mirror (V3 0 0 1) c])
-      ## translate
-        (V3 0 0 (-eps / 2))
-        (linearExtrude (0.5 * height') False 10 twist m)
+      ## linearExtrude (0.5 * height) False 10 twist m
 
 -- | Distance from the sun's axis to a planet's.  The reference distance
 -- @rSun + rPlanet@ when nothing is shifted, and wider than it when the sun and
@@ -384,7 +405,8 @@ tipShortening i p =
 -- any 'shift' on @i@ itself is ignored.
 planetary :: (HasScad es) => Involute -> Planetary -> Eff es Form
 planetary i p =
-  let nRing = ringTeeth p
+  let beta = fromMaybe (pi / 4) p.helixAngle
+      nRing = ringTeeth p
       rSun = pitchRadius i p.sunTeeth
       rPlanet = pitchRadius i p.planetTeeth
       rRing = pitchRadius i nRing
@@ -427,11 +449,11 @@ planetary i p =
               . translate (V3 (centerDistance i p) 0 0)
               -- The helix is still measured against the pitch radius: a shift
               -- moves neither pitch circle, and the two halves have to cancel.
-              . herringbone p.height (-1) rPlanet
+              . herringbone p.height (-beta) rPlanet
               . rotate2d (pi / fromIntegral p.planetTeeth + omega' * spin)
    in ( \g ->
-          herringbone p.height (-1) rRing ring
-            : herringbone p.height 1 rSun sun
+          herringbone p.height (-beta) rRing ring
+            : herringbone p.height beta rSun sun
             : [ planet (tau * fromIntegral k / fromIntegral p.nPlanet) g
               | k <- [0 .. p.nPlanet - 1]
               ]
