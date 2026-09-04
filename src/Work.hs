@@ -11,27 +11,34 @@ render = writeScad "work.scad" model7
 -- the planets land on exact even spacing rather than being nudged onto a
 -- compromise angle.
 --
--- A planet this small is squeezed from both sides.  'minShift' is the floor --
--- shift less than that and the rack undercuts the flank -- and a pointed tooth
--- is the ceiling, which 'tipThickness' reports as it runs down to zero.  A
--- steeper pressure angle lowers the floor, but it also converges the flanks
--- sooner, and at these tooth counts that second effect wins: at 25° a
--- full-depth tooth is past its point on a six-tooth planet at every shift the
--- floor allows, and only a stub tooth brings it back.  At 20° the band is open
--- without one: the floor is 0.649 modules on the planets and 0.415 on the sun,
--- and the shifts below clear both with room to spare and still leave 1.03mm of
--- land at the planet tip.
+-- This is meant to come off a printer turning, so what binds is not the mesh
+-- but the nozzle.  Two millimetre-scale widths have to survive it: the gap
+-- 'backlash' opens between a planet and the gears either side of it, and the
+-- land left on top of a planet's tooth once that gap has been cut out of it.
+-- At a module this small the second is the tighter of the two, and it is what
+-- picks the tooth counts.  Equal sun and planet teeth keep both profile shifts
+-- near their floor; six-tooth planets do not, and the 0.8-module shift they
+-- need leaves so little land that any offset worth having points the tooth.
 --
--- The shifts are large, and they push the gears apart: the mesh runs at 33.4°
--- rather than 20°, and the planets orbit at 28.8 rather than the reference
--- 24.  The ring grows with them -- 'ringShift' is 2.15 -- and 'planetary'
--- then cuts its root back over the planets' shortened tips, leaving it at
--- 43.86, which is what 'rOuter' has to clear.
+-- 'minShift' is that floor -- shift less than it and the rack undercuts the
+-- flank -- but sitting on it is wrong here, and counterintuitively so.
+-- 'planetary' cuts a shifted tip back by 'tipShortening', which grows with the
+-- shift, and a tooth is fatter the further down it is cut; so a shift well
+-- above the floor buys land rather than spending it.  What it costs is contact
+-- ratio, and the helix buys that back more cheaply.
 --
--- Six-tooth planets are what pin the planet count at four: they put
--- @sunTeeth + ringTeeth@ at 32, and of the counts that will fit around the sun
--- only four divides it.  Five would leave each planet nudged up to 5.6° off
--- even.
+-- The helix is the other half of that trade.  A transverse contact ratio below
+-- one -- which is where an eight-tooth pair sits at any shift this design can
+-- use -- means no tooth pair is continuously engaged in any one cross-section,
+-- and only the overlap the helix contributes keeps the mesh alive.  That
+-- overlap is linear in the face width, which is why this box is as tall as it
+-- is wide rather than the flatter golden-ratio proportion it used to be: the
+-- taller face lets the helix come back down to 30°, and a shallower helix
+-- spends less land on 'transverseBacklash'.  A 45° one would spend a third of
+-- it.
+--
+-- Eight-tooth planets put @sunTeeth + ringTeeth@ at 32, so four planets divide
+-- it exactly and none of them is nudged off even spacing.
 --
 -- The teeth here are around a millimetre across, so OpenSCAD's default
 -- tessellation is far too coarse for them: at @$fa = 12@ the root circles come
@@ -44,23 +51,22 @@ render = writeScad "work.scad" model7
 -- which is where a slicer wants it.
 model7 :: Form'
 model7 =
-  let phi = (1 + sqrt 5) / 2
-      m = 3.2
-      n = 6 :: Int
-      h = fromIntegral n * m / phi
+  let m = 1.6
+      n = 8 :: Int
+      h = fromIntegral n * m
    in fa 3 . fs 0.2 . translate (V3 0 0 (h / 2)) $
         planetary
           (defaultInvolute m) {pressureAngle = pi * 20 / 180}
           Planetary
-            { rOuter = 50,
-              sunTeeth = 10,
+            { rOuter = 26.5,
+              sunTeeth = n,
               planetTeeth = n,
-              sunShift = 0.55,
-              planetShift = 0.80,
+              sunShift = 0.74,
+              planetShift = 0.74,
               nPlanet = 4,
-              backlash = 0.2,
+              backlash = 0.3,
               height = h,
-              helixAngle = Nothing
+              helixAngle = Just (pi * 30 / 180)
             }
 
 model7' :: Form'
