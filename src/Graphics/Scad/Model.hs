@@ -12,6 +12,7 @@
 module Graphics.Scad.Model
   ( Radian (..),
     tau,
+    phi,
     OffsetMode (..),
     Model (..),
     Shape,
@@ -37,6 +38,10 @@ newtype Radian = Radian Double
 -- | One full turn.
 tau :: (Floating a) => a
 tau = 2 * pi
+
+-- | The golden ratio.
+phi :: (Floating a) => a
+phi = (1 + sqrt 5) / 2
 
 data OffsetMode
   = OffsetR Double
