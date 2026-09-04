@@ -88,3 +88,4 @@
   planet came off the bed fused to the ring.  `transverseBacklash` divides it
   back out at the tip, so an existing gearbox opens up by `1 / cos` of the helix
   angle there unless its helix is zero, at which the correction is exactly one.
+* Added `phi` beside `tau`.
