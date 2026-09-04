@@ -338,3 +338,50 @@ spec = do
       gearbox p `shouldBe` gearbox p {helixAngle = Just beta}
     it "draws a different gearbox at a different angle" $
       gearbox p `shouldNotBe` gearbox p {helixAngle = Just (pi / 6)}
+
+    -- The bug these guard: 'backlash' was offset straight onto the planet's
+    -- transverse profile, but 'herringbone' twists that profile into a
+    -- helicoid, so the gap it opened across the surface was only cos beta of
+    -- what was asked for -- and less again at the tip, where the local helix is
+    -- steeper than at the pitch circle.  On the Work gearbox, at 45 degrees on
+    -- a planet whose tip stands half again its pitch radius out, 0.2mm of
+    -- asked-for clearance came out as 0.14mm where the two surfaces come
+    -- closest, and a planet printed fused to the ring.
+    let i = steep 2.0
+    it "offsets by the backlash itself when there is no helix" $
+      transverseBacklash i p {helixAngle = Just 0} `shouldBeNear` p.backlash
+    it "offsets further the steeper the helix" $ do
+      transverseBacklash i p `shouldSatisfy` (> p.backlash)
+      transverseBacklash i p {helixAngle = Just (pi / 6)}
+        `shouldSatisfy` (< transverseBacklash i p)
+    -- cos is even, so the hand of the helix cannot enter -- mirroring a
+    -- gearbox must not change how loose it runs.
+    it "takes nothing from the hand of the helix" $
+      transverseBacklash i p {helixAngle = Just (-beta)}
+        `shouldBeNear` transverseBacklash i p
+    -- The correction is bounded by the tooth it is cut out of: widen it past
+    -- half the land on the planet's tip and the tooth comes to a point.  That
+    -- is a real constraint rather than a theoretical one -- it is what rules
+    -- out six-tooth planets at the module the Work gearbox is drawn at, since
+    -- the 0.8 module shift they need to clear 'minShift' leaves too little
+    -- land to cut a printable gap out of.  Asked of the gearbox that replaced
+    -- them, on the printable side of the same line.
+    let work = defaultInvolute 1.6
+        wp =
+          Planetary
+            { rOuter = 26.5,
+              sunTeeth = 8,
+              planetTeeth = 8,
+              sunShift = 0.74,
+              planetShift = 0.74,
+              nPlanet = 4,
+              backlash = 0.3,
+              height = 12.8,
+              helixAngle = Just (pi * 30 / 180)
+            }
+        planetOf j q =
+          let k = shifted q.planetShift j
+           in k {addendum = k.addendum - tipShortening j q * j.module'}
+    it "cannot eat the tooth it is cut out of" $
+      tipThickness (planetOf work wp) wp.planetTeeth
+        `shouldSatisfy` (> 2 * transverseBacklash work wp)

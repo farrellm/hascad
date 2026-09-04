@@ -27,6 +27,13 @@
 -- think about; now that 'helixAngle' varies, a caller matching these gears to
 -- a real cutter does.
 --
+-- 'backlash' is the other thing the helix quietly changes, and the one a print
+-- notices.  It is cut as an offset of the planet's transverse profile, but the
+-- surface it has to open a gap across is a helicoid, so the gap comes out
+-- @cos beta@ of what was asked for -- and worse than that at the tip, where
+-- the local helix is steeper than at the pitch circle.  'transverseBacklash'
+-- divides it back out, so 'backlash' means the gap and not the offset.
+--
 -- In a 'Planetary' the ring's tooth count is not free: meshing forces
 -- @rRing = rSun + 2 rPlanet@, hence 'ringTeeth'.  Planets land on exactly even
 -- spacing only when @('sunTeeth' + 'ringTeeth') \`mod\` 'nPlanet' == 0@; when
@@ -75,6 +82,7 @@ module Graphics.Scad.Gear
     ringShift,
     centerDistance,
     tipShortening,
+    transverseBacklash,
     planetary,
     helixTwist,
     herringbone,
@@ -159,8 +167,11 @@ data Planetary = Planetary
     planetShift :: Double,
     -- | How many planets.
     nPlanet :: Int,
-    -- | Radial clearance taken off each planet, to leave room for a printed
-    -- part to actually turn.
+    -- | Clearance to leave for a printed part to actually turn, measured
+    -- normal to the tooth surface.  It is cut out of the planets alone, since
+    -- a mesh only cares about the total of the two gears' clearances, and a
+    -- planet is the one member of both of them.  What the cross-section is
+    -- actually offset by is wider -- see 'transverseBacklash'.
     backlash :: Double,
     -- | Height of the gearbox.
     height :: Double,
@@ -398,6 +409,33 @@ tipShortening i p =
       y = (centerDistance i p - a) / i.module'
    in p.sunShift + p.planetShift - y
 
+-- | How far the planet's cross-section has to be offset to open a gap of
+-- 'backlash' across the tooth surface itself.
+--
+-- 'herringbone' twists a flat profile, so a planet's flanks are helicoids, and
+-- an offset made in the transverse plane opens a gap of only @d cos beta_r@
+-- measured normal to one.  'helixTwist' pins the twist to the pitch radius, so
+-- the local helix angle grows with the radius -- @tan beta_r = tan beta * r /
+-- rPitch@ -- and the shallowest gap is at the tip, which is precisely the part
+-- of a planet that runs in the ring's tooth spaces.  Dividing the backlash out
+-- there is what lets it name the gap the print gets rather than the one the
+-- cross-section was asked for.
+--
+-- The tip is measured on the shortened planet 'planetary' actually cuts, not
+-- on the nominal one.  @cos@ is even, so the hand of the helix does not enter;
+-- at @beta = 0@ the factor is exactly one and a spur gearbox is unchanged.  As
+-- in 'helixTwist', @|beta|@ approaching a right angle runs off to infinity and
+-- is not checked for.
+transverseBacklash :: Involute -> Planetary -> Double
+transverseBacklash i p =
+  let beta = fromMaybe (pi / 4) p.helixAngle
+      rPlanet = pitchRadius i p.planetTeeth
+      iPlanet =
+        let j = shifted p.planetShift i
+         in j {addendum = j.addendum - tipShortening i p * i.module'}
+      rTip = tipRadius iPlanet p.planetTeeth
+   in p.backlash / cos (atan (tan beta * rTip / rPlanet))
+
 -- | A planetary gearbox: a ring gear, a sun gear, and planets phased so their
 -- teeth mesh with both.
 --
@@ -458,6 +496,7 @@ planetary i p =
               | k <- [0 .. p.nPlanet - 1]
               ]
       )
-        ## ( mirror (V2 1 0) . offsetR (-p.backlash) False $
-               gear iPlanet p.planetTeeth
+        ## ( mirror (V2 1 0)
+               . offsetR (-(transverseBacklash i p)) False
+               $ gear iPlanet p.planetTeeth
            )

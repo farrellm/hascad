@@ -76,3 +76,15 @@
 * Added `fragments` and `extrudeSlices` to `Graphics.Scad.Facet`, which
   reimplement OpenSCAD's own fragment rule for the geometry hascad has to
   resolve itself, and `askFacet` for reading the settings in scope.
+* `backlash` names the gap a print gets rather than the offset the
+  cross-section is cut with.  It was applied straight to the planet's
+  transverse profile, but `herringbone` twists that profile into a helicoid, so
+  the gap it opened across the surface was only `cos beta` of what was asked
+  for — and less again at the tip, because `helixTwist` pins the twist to the
+  pitch radius and the local helix angle therefore grows with the radius.  On
+  the Work gearbox that was the worst case and the printed one: a 45° helix on
+  a planet whose tip stands half again its pitch radius out turned 0.2mm of
+  asked-for clearance into 0.14mm measured across the rendered mesh, and a
+  planet came off the bed fused to the ring.  `transverseBacklash` divides it
+  back out at the tip, so an existing gearbox opens up by `1 / cos` of the helix
+  angle there unless its helix is zero, at which the correction is exactly one.

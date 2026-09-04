@@ -286,7 +286,7 @@ module mdl_7() {
 }
 mdl_5() {
   mirror([1.0, 0.0, 0.0]) {
-    offset(r = -0.4, chamfer = false) {
+    offset(r = -0.6230657579866752, chamfer = false) {
       mdl_6() {
         mdl_7() {
           rotate(a = [0.0, 0.0, -12.295779513082318]) {
