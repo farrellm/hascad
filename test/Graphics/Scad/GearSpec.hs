@@ -366,18 +366,18 @@ spec = do
     -- the 0.8 module shift they need to clear 'minShift' leaves too little
     -- land to cut a printable gap out of.  Asked of the gearbox that replaced
     -- them, on the printable side of the same line.
-    let work = defaultInvolute 1.6
+    let work = defaultInvolute 1.05
         wp =
           Planetary
-            { rOuter = 26.5,
-              sunTeeth = 8,
-              planetTeeth = 8,
-              sunShift = 0.74,
-              planetShift = 0.74,
+            { rOuter = 14.9,
+              sunTeeth = 7,
+              planetTeeth = 7,
+              sunShift = 0.85,
+              planetShift = 0.65,
               nPlanet = 4,
               backlash = 0.3,
-              height = 12.8,
-              helixAngle = Just (pi * 30 / 180)
+              height = 12,
+              helixAngle = Just (pi * 17.5 / 180)
             }
         planetOf j q =
           let k = shifted q.planetShift j
