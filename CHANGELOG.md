@@ -2,6 +2,11 @@
 
 ## 0.1.0.0 -- unreleased
 
+* **Breaking:** the union and intersection operators are now `<||>` and `<&&>`
+  (formerly `<+>` and `<#>`); `<->` is unchanged.
+* Added `Part`, a lawful monoid of signed models: `positive` adds material and
+  `negative` cuts everything to its left, so `realize (positive x <> positive y)`
+  is `x <||> y` and `realize (positive x <> negative y)` is `x <-> y`.
 * Port of the `scad` package: a dimension-indexed DSL for generating OpenSCAD
   source, with automatic sharing of repeated geometry, and involute spur and
   planetary gears.

@@ -126,6 +126,12 @@ spec = do
     it "difference subtracts every argument" $
       form (difference (cube 2) [sphere 1, sphere 2])
         `shouldBe` "difference() {\n  cube(2.0, center = true);\n  sphere(1.0);\n  sphere(2.0);\n}"
+    it "<||> chains into one union" $
+      shape (circle 1 <||> circle 2 <||> circle 3)
+        `shouldBe` "union() {\n  circle(1.0);\n  circle(2.0);\n  circle(3.0);\n}"
+    it "<&&> chains into one intersection" $
+      shape (circle 1 <&&> circle 2 <&&> circle 3)
+        `shouldBe` "intersection() {\n  circle(1.0);\n  circle(2.0);\n  circle(3.0);\n}"
     it "<-> chains into one difference" $
       shape (circle 3 <-> circle 2 <-> circle 1)
         `shouldBe` "difference() {\n  circle(3.0);\n  circle(2.0);\n  circle(1.0);\n}"
@@ -135,6 +141,49 @@ spec = do
     it "minkowski" $
       shape (minkowski [circle 1, circle 2])
         `shouldBe` "minkowski() {\n  circle(1.0);\n  circle(2.0);\n}"
+
+  describe "parts" $ do
+    let a = circle 1
+        b = circle 2
+        c = circle 3
+        part :: Part Shape' -> Text
+        part = shape . realize
+        examples :: [Part Int]
+        examples =
+          [mempty, positive 1, negative 2, positive 3 <> negative 4, negative 5 <> positive 6]
+    it "positive x <> positive y is x <||> y" $
+      part (positive a <> positive b) `shouldBe` shape (a <||> b)
+    it "positive x <> negative y is x <-> y" $
+      part (positive a <> negative b) `shouldBe` shape (a <-> b)
+    it "a cut removes what is to its left, not what follows it" $
+      part (positive a <> negative b <> positive c)
+        `shouldBe` shape ((a <-> b) <||> c)
+    it "a component's cut reaches the material it is added to" $
+      part (positive a <> (positive b <> negative c))
+        `shouldBe` shape ((a <||> b) <-> c)
+    it "runs of material and cuts flatten" $
+      part (positive a <> positive b <> negative c <> negative a)
+        `shouldBe` "difference() {\n  union() {\n    circle(1.0);\n    circle(2.0);\n  }\n  circle(3.0);\n  circle(1.0);\n}"
+    it "has identities" $
+      for_ examples $ \x -> do
+        mempty <> x `shouldBe` x
+        x <> mempty `shouldBe` x
+    it "is associative" $
+      sequence_
+        [ (x <> y) <> z `shouldBe` x <> (y <> z)
+        | x <- examples,
+          y <- examples,
+          z <- examples
+        ]
+    it "realizes associatively" $
+      part ((positive a <> negative b) <> (positive c <> negative a))
+        `shouldBe` part (positive a <> (negative b <> positive c) <> negative a)
+    it "transforms material and cuts together" $
+      part (translate (V2 1 0) <$> (positive a <> negative b))
+        `shouldBe` shape (translate (V2 1 0) a <-> translate (V2 1 0) b)
+    it "with no material is the empty union" $ do
+      part mempty `shouldBe` shape (union [])
+      part (negative a) `shouldBe` shape (union [])
 
   describe "modifiers" $ do
     it "hidden" $ shape (hidden (circle 1)) `shouldBe` "* circle(1.0);"
