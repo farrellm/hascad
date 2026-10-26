@@ -9,6 +9,15 @@
 -- > tube :: Form'
 -- > tube = fn 90 (cylinder 20 5 <-> cylinder 21 3)
 --
+-- A 'Part' carries cuts as well as material, so a component can bring its
+-- own clearance hole to whatever it is added to:
+--
+-- > boss :: Part Form'
+-- > boss = positive (cylinder 4 6) <> negative (cylinder 10 2)
+-- >
+-- > bracket :: Form'
+-- > bracket = realize (positive (box (V3 30 30 2)) <> boss)
+--
 -- This module re-exports the DSL.  Import "Graphics.Scad.Model" as well if you want
 -- the AST constructors.
 module Graphics.Scad
@@ -90,6 +99,11 @@ module Graphics.Scad
     SetLike (..),
     Union (..),
     Intersection (..),
+    Signed (..),
+    Part (..),
+    positive,
+    negative,
+    realize,
     union,
     intersection,
     difference,
