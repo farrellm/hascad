@@ -39,8 +39,9 @@ into source with `render`, `renderText`, `printScad` or `writeScad`.
   `offsetDelta`.
 - **Combining** — `union`, `intersection`, `difference`, `hull`, `minkowski`,
   and the operators `<||>`, `<&&>`, `<->`, which flatten as they chain. A
-  `Part` is a monoid of material (`positive`) and cuts (`negative`), so a
-  component can carry its own clearance; `realize` turns it into a model.
+  `Part` is a monoid of material (`positive`) and cuts (`negative`) applied
+  left to right, so a component can carry its own clearance into whatever it
+  is appended to; `realize` turns it into a model.
 - **Modifiers** — `hidden`, `debug`, `background` (OpenSCAD's `*`, `#`, `%`).
 - **Sharing** — `#` and `##` lift a Haskell function into an OpenSCAD module;
   see below.
